@@ -13,6 +13,7 @@ export const signInWithGoogle = async () => {
   return result;
 };
 
+<<<<<<< HEAD
 export const registerWithEmailAndPassword = async (name: string, email: string, password: string) => {
   const result = await createUserWithEmailAndPassword(auth, email, password);
   const user = result.user;
