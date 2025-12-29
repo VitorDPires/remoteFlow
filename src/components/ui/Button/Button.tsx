@@ -1,14 +1,12 @@
 import styles from "./Button.module.css";
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  onClick?: () => void;
-  type: "button" | "submit" | "reset" | undefined;
 }
 
-function Button({ children, onClick, type }: ButtonProps) {
+function Button({ children, onClick, type, ...props }: ButtonProps) {
   return (
-    <button onClick={onClick} type={type} className={styles.button}>
+    <button onClick={onClick} type={type} className={styles.button} {...props}>
       {children}
     </button>
   );
