@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  margin: 0 auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 320px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.subTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.footer {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.footer a {
+  color: #0ea5e9;
+}
+
+.errorMessage {
+  margin-top: 0.75rem;
+  color: #dc2626;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
