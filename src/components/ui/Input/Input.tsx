@@ -5,7 +5,7 @@ type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "placehol
   type: string;
   placeholder: string;
   value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 function Input({ type, placeholder, value, onChange, ...props }: InputProps) {
@@ -20,6 +20,5 @@ function Input({ type, placeholder, value, onChange, ...props }: InputProps) {
     />
   );
 }
-
 
 export default Input;
