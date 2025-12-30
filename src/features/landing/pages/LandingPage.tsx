@@ -44,6 +44,10 @@ function LandingPage() {
 
   return (
     <main className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.projectTitle}>Remote Flow</h1>
+        <p className={styles.projectSubtitle}>Modern coordination for distributed teams</p>
+      </div>
       <div className={styles.grid}>
         <section className={styles.intro}>
           <p className={styles.introTag}>Remote-first, secure, performance-driven</p>
