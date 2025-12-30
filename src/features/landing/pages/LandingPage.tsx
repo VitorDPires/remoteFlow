@@ -44,55 +44,71 @@ function LandingPage() {
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>RemoteFlow</h1>
-      <p className={styles.subtitle}>Remote team and project management with an elegant, secure interface.</p>
-
-      {loading ? (
-        <div className={styles.card}>
-          <p>Checking session...</p>
-        </div>
-      ) : user ? (
-        <div className={styles.card}>
-          <p>Welcome back, {profile?.name || user.displayName || user.email || "RemoteFlow user"}!</p>
-          <p>Head to your dashboard or continue where you left off.</p>
-          <ul className={styles.profileList}>
-            {profileLoading && <li>Loading profile...</li>}
-            {!profileLoading && profile && (
-              <>
-                <li>
-                  <strong>Role:</strong> {profile.role ?? "user"}
-                </li>
-                <li>
-                  <strong>Joined:</strong> {joinedLabel ?? "—"}
-                </li>
-              </>
-            )}
+      <div className={styles.grid}>
+        <section className={styles.intro}>
+          <p className={styles.introTag}>Remote-first, secure, performance-driven</p>
+          <h2 className={styles.introHeading}>Manage distributed teams and projects with confidence.</h2>
+          <p className={styles.introText}>
+            Plan sprints, align releases, and track metrics in a unified workspace with granular access controls.
+            Every interaction stays encrypted and logged for effortless audits.
+          </p>
+          <ul className={styles.featureList}>
+            <li>Role-based permissions with trust-level safeguards</li>
+            <li>Live task management with synchronized updates</li>
+            <li>Clear time and delivery reports per initiative</li>
           </ul>
-          <div className={styles.actions}>
-            <Link to="/login" className={styles.link}>
-              Go to login
-            </Link>
-            <Link to="/register" className={styles.link}>
-              Manage account
-            </Link>
-            <Button type="button" disabled={signingOut} onClick={handleLogout}>
-              {signingOut ? "Signing out..." : "Sign out"}
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className={styles.card}>
-          <p>Get started by creating an account or logging in to explore the dashboard.</p>
-          <div className={styles.actions}>
-            <Link to="/login" className={styles.link}>
-              Login
-            </Link>
-            <Link to="/register" className={styles.link}>
-              Register
-            </Link>
-          </div>
-        </div>
-      )}
+        </section>
+
+        <section className={styles.card}>
+          {loading ? (
+            <p>Checando a sessão…</p>
+          ) : user ? (
+            <>
+              <p className={styles.greeting}>
+                Welcome back, {profile?.name || user.displayName || user.email || "RemoteFlow user"}!
+              </p>
+              <p className={styles.hint}>Visit your dashboard or pick up where you left off.</p>
+              <ul className={styles.profileList}>
+                {profileLoading && <li>Carregando perfil…</li>}
+                {!profileLoading &&
+                  profile && (
+                    <>
+                      <li>
+                      <strong>Role:</strong> {profile.role ?? "user"}
+                      </li>
+                      <li>
+                        <strong>Joined:</strong> {joinedLabel ?? "—"}
+                      </li>
+                    </>
+                  )}
+              </ul>
+              <div className={styles.actions}>
+                <Link to="/dashboard" className={styles.link}>
+                  Dashboard
+                </Link>
+                <Link to="/register" className={styles.link}>
+                  Account
+                </Link>
+                <Button type="button" disabled={signingOut} onClick={handleLogout}>
+                  {signingOut ? "Signing out…" : "Sign out"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={styles.greeting}>Get started by creating an account or logging in to explore the dashboard.</p>
+              <div className={styles.actions}>
+                <Link to="/login" className={styles.link}>
+                  Login
+                </Link>
+                <Link to="/register" className={styles.link}>
+                  Register
+                </Link>
+              </div>
+            </>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
