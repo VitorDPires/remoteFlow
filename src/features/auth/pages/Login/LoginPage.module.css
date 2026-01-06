@@ -7,18 +7,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: clamp(1rem, 2vw, 1.5rem);
   box-sizing: border-box;
 }
 
 .card {
-  width: min(480px, 100%);
-  background: var(--color-panel);
-  border-radius: 1.5rem;
-  border: 1px solid var(--color-panel-border);
-  padding: clamp(2rem, 3vw, 2.8rem);
-  box-shadow: 0 35px 60px var(--color-shadow);
+  width: min(1040px, 100%);
+  padding: clamp(1rem, 3vw, 1.75rem);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.25rem;
 }
 
@@ -32,7 +30,6 @@
 .title {
   font-size: clamp(2rem, 3vw, 2.35rem);
   margin: 0;
-  color: var(--color-text);
 }
 
 .subTitle {
@@ -40,25 +37,52 @@
   text-transform: uppercase;
   font-size: 0.75rem;
   margin: 0;
-  color: var(--color-muted-strong);
+  color: var(--color-accent);
 }
 
 .description {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--color-muted);
+  color: var(--color-muted-strong);
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
+  width: min(960px, 100%);
+}
+
+.form :global(input) {
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  color: var(--color-text);
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.55);
+}
+
+.form :global(input::placeholder) {
+  color: var(--color-muted);
 }
 
 .actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.actions :global(button) {
+  flex: 1;
+  min-width: min(240px, 100%);
+  background: linear-gradient(120deg, var(--color-accent-strong), #14b8a6);
+  color: #0b1224;
+  border: 1px solid var(--color-panel-border);
+  box-shadow: 0 25px 45px rgba(14, 165, 233, 0.25);
+}
+
+.actions :global(button:hover) {
+  filter: brightness(1.05);
 }
 
 .message {
@@ -75,7 +99,7 @@
   margin: 0;
   font-size: 0.85rem;
   text-align: center;
-  color: var(--color-muted-strong);
+  color: var(--color-muted);
 }
 
 .link {

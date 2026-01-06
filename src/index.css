@@ -69,17 +69,3 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-text: #0f172a;
-    --color-bg: #f9fafb;
-    --color-button-bg: #fff;
-  }
-  body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-  }
-  a:hover {
-    color: var(--color-accent-strong);
-  }
-}
