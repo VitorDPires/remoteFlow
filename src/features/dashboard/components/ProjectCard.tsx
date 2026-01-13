@@ -1,43 +1,51 @@
+import { memo } from "react";
+
+import { PROJECT_STATUS_LABELS } from "../constants";
 import type { Project } from "../types";
 import styles from "../pages/DashboardPage.module.css";
 
-type ProjectCardProps = {
+interface ProjectCardProps {
   project: Project;
   formatDate: (value: string) => string;
-};
+}
 
 function ProjectCard({ project, formatDate }: ProjectCardProps) {
+  const statusLabel = PROJECT_STATUS_LABELS[project.status] || project.status;
+
   return (
-    <article className={styles.projectCard}>
+    <article 
+      className={styles.projectCard}
+      aria-label={`Project ${project.name}`}
+    >
       <div className={styles.cardHeader}>
         <div>
           <h3 className={styles.projectName}>{project.name}</h3>
-          <p className={styles.projectDescription}>{project.description}</p>
+          {project.description && (
+            <p className={styles.projectDescription}>{project.description}</p>
+          )}
         </div>
         <span
           className={[styles.status, styles[`status-${project.status}`]]
             .filter(Boolean)
             .join(" ")}
+          aria-label={`Status: ${statusLabel}`}
+          role="status"
         >
-          {project.status === "active"
-            ? "Active"
-            : project.status === "paused"
-              ? "Paused"
-              : "Planning"}
+          {statusLabel}
         </span>
       </div>
 
-      <div className={styles.meta}>
-        <div>
-          <span className={styles.metaLabel}>Papel</span>
+      <div className={styles.meta} role="list" aria-label="Project information">
+        <div role="listitem">
+          <span className={styles.metaLabel}>Role</span>
           <span className={styles.metaValue}>{project.role}</span>
         </div>
-        <div>
-          <span className={styles.metaLabel}>Atualizado</span>
+        <div role="listitem">
+          <span className={styles.metaLabel}>Updated</span>
           <span className={styles.metaValue}>{formatDate(project.updatedAt)}</span>
         </div>
-        <div>
-          <span className={styles.metaLabel}>Membros</span>
+        <div role="listitem">
+          <span className={styles.metaLabel}>Members</span>
           <span className={styles.metaValue}>{project.members}</span>
         </div>
       </div>
@@ -45,4 +53,4 @@ function ProjectCard({ project, formatDate }: ProjectCardProps) {
   );
 }
 
-export default ProjectCard;
+export default memo(ProjectCard);

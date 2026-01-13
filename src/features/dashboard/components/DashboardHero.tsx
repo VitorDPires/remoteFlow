@@ -1,33 +1,45 @@
+import { memo } from "react";
+
 import Button from "@/components/ui/Button";
 
 import styles from "../pages/DashboardPage.module.css";
 
-type DashboardHeroProps = {
+interface DashboardHeroProps {
   totalProjects: number;
   activeProjects: number;
   onCreateClick: () => void;
-};
+  disabled?: boolean;
+}
 
-function DashboardHero({ totalProjects, activeProjects, onCreateClick }: DashboardHeroProps) {
+function DashboardHero({ totalProjects, activeProjects, onCreateClick, disabled = false }: DashboardHeroProps) {
   return (
     <header className={styles.hero}>
       <div>
-        <p className={styles.kicker}>Overview</p>
         <h1 className={styles.title}>Dashboard</h1>
-        <p className={styles.subtitle}>Track the projects you are part of and spin up new drafts.</p>
-        <div className={styles.chips}>
-          <span className={styles.chip}>{totalProjects} projects</span>
-          <span className={styles.chip}>{activeProjects} active</span>
+        <p className={styles.subtitle}>
+          Track projects you participate in and create new ones.
+        </p>
+        <div className={styles.chips} role="list" aria-label="Project statistics">
+          <span className={styles.chip} role="listitem" aria-label={`${totalProjects} total projects`}>
+            {totalProjects} {totalProjects === 1 ? "project" : "projects"}
+          </span>
+          <span className={styles.chip} role="listitem" aria-label={`${activeProjects} active projects`}>
+            {activeProjects} active
+          </span>
         </div>
       </div>
       <div className={styles.heroAction}>
-        <Button type="button" onClick={onCreateClick}>
+        <Button 
+          type="button" 
+          onClick={onCreateClick}
+          disabled={disabled}
+          aria-label="Create new project"
+        >
           Create project
         </Button>
-        <p className={styles.hint}>Local mock only, no persistence.</p>
       </div>
     </header>
   );
 }
 
-export default DashboardHero;
+export default memo(DashboardHero);

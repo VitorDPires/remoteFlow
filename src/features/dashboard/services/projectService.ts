@@ -4,9 +4,8 @@ import { Timestamp, addDoc, collection, getDocs, query, serverTimestamp, where }
 
 import { db } from "@/app/firebase/firebase";
 
-import type { Project, ProjectStatus } from "../types";
-
-const COLLECTION = "projects";
+import { DASHBOARD_CONSTANTS } from "../constants";
+import type { CreateProjectPayload, Project, ProjectRole, ProjectStatus } from "../types";
 
 const normalizeStatus = (value: unknown): ProjectStatus => {
   if (value === "active" || value === "paused" || value === "planning") {
@@ -15,11 +14,23 @@ const normalizeStatus = (value: unknown): ProjectStatus => {
   return "planning";
 };
 
+const normalizeRole = (value: unknown): ProjectRole => {
+  if (value === "Owner" || value === "Admin" || value === "Member" || value === "Viewer") {
+    return value;
+  }
+  return "Member";
+};
+
 const mapDocumentToProject = (id: string, data: DocumentData, uid: string): Project => {
   const updatedAt =
     data.updatedAt instanceof Timestamp
       ? data.updatedAt.toDate().toISOString()
       : new Date().toISOString();
+
+  const createdAt =
+    data.createdAt instanceof Timestamp
+      ? data.createdAt.toDate().toISOString()
+      : undefined;
 
   const members =
     typeof data.members === "number"
@@ -28,7 +39,7 @@ const mapDocumentToProject = (id: string, data: DocumentData, uid: string): Proj
         ? data.participantIds.length
         : 0;
 
-  const role = typeof data.roles?.[uid] === "string" ? data.roles[uid] : "Member";
+  const role = normalizeRole(data.roles?.[uid]);
 
   return {
     id,
@@ -38,45 +49,43 @@ const mapDocumentToProject = (id: string, data: DocumentData, uid: string): Proj
     members,
     role,
     updatedAt,
+    createdAt,
   };
 };
 
 export const fetchUserProjects = async (uid: string): Promise<Project[]> => {
-  const projectsRef = collection(db, COLLECTION);
+  const projectsRef = collection(db, DASHBOARD_CONSTANTS.PROJECTS_COLLECTION);
   const membershipQuery = query(projectsRef, where("participantIds", "array-contains", uid));
   const snapshot = await getDocs(membershipQuery);
 
   return snapshot.docs.map((doc) => mapDocumentToProject(doc.id, doc.data(), uid));
 };
 
-type CreateProjectPayload = {
-  name: string;
-  description: string;
-};
-
 export const createProject = async (user: User, payload: CreateProjectPayload): Promise<Project> => {
-  const projectsRef = collection(db, COLLECTION);
-  const description =
-    payload.description.trim() || "Project created locally for testing purposes.";
+  const projectsRef = collection(db, DASHBOARD_CONSTANTS.PROJECTS_COLLECTION);
+  const name = payload.name.trim();
+  const description = payload.description.trim();
+  const now = new Date().toISOString();
 
   const docRef = await addDoc(projectsRef, {
-    name: payload.name,
+    name,
     description,
-    status: "planning",
+    status: "planning" as ProjectStatus,
     members: 1,
     participantIds: [user.uid],
-    roles: { [user.uid]: "Owner" },
+    roles: { [user.uid]: "Owner" as ProjectRole },
     updatedAt: serverTimestamp(),
     createdAt: serverTimestamp(),
   });
 
   return {
     id: docRef.id,
-    name: payload.name,
+    name,
     description,
     status: "planning",
     members: 1,
     role: "Owner",
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
+    createdAt: now,
   };
 };

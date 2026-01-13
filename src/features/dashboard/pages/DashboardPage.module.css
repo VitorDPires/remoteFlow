@@ -141,6 +141,13 @@
   font-size: 0.95rem;
 }
 
+.errorText {
+  color: #fecdd3;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
 .panelActions {
   display: inline-flex;
   align-items: center;
