@@ -251,6 +251,16 @@
   flex-wrap: wrap;
 }
 
+.alert {
+  margin: 0.75rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-danger);
+  background: rgba(248, 113, 113, 0.12);
+  color: #fecdd3;
+  font-weight: 600;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;

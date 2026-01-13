@@ -1,38 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { useAuth } from "@/features/auth/hooks";
 
 import { CreateProjectModal, DashboardHero, ProjectList } from "../components";
+import { createProject, fetchUserProjects } from "../services";
 import type { Project } from "../types";
 import styles from "./DashboardPage.module.css";
-
-const initialProjects: Project[] = [
-  {
-    id: "p1",
-    name: "RemoteFlow Core",
-    role: "Owner",
-    status: "active",
-    members: 12,
-    updatedAt: "2024-12-20T00:00:00Z",
-    description: "Platform foundation, authentication, and security.",
-  },
-  {
-    id: "p2",
-    name: "Customer Portal",
-    role: "Contributor",
-    status: "active",
-    members: 8,
-    updatedAt: "2024-12-12T00:00:00Z",
-    description: "Onboarding layer and authenticated customer area.",
-  },
-  {
-    id: "p3",
-    name: "Executive Reports",
-    role: "Viewer",
-    status: "paused",
-    members: 4,
-    updatedAt: "2024-11-28T00:00:00Z",
-    description: "Quarterly delivery and metrics dashboards.",
-  },
-];
 
 const formatDate = (value: string): string => {
   const parsed = new Date(value);
@@ -45,26 +18,65 @@ const formatDate = (value: string): string => {
 };
 
 export default function DashboardPage() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const { user, loading: authLoading } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const activeProjects = useMemo(
     () => projects.filter((project) => project.status === "active").length,
     [projects],
   );
 
-  const handleCreateProject = (payload: { name: string; description: string }) => {
-    const newProject: Project = {
-      id: `project-${Date.now()}`,
-      name: payload.name,
-      role: "Owner",
-      status: "planning",
-      members: 1,
-      updatedAt: new Date().toISOString(),
-      description: payload.description || "Projeto criado localmente para testes.",
+  useEffect(() => {
+    const load = async () => {
+      if (!user) {
+        setProjects([]);
+        setLoadingProjects(false);
+        return;
+      }
+
+      setLoadingProjects(true);
+      setError(null);
+      try {
+        const fetched = await fetchUserProjects(user.uid);
+        setProjects(fetched);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load projects from Firestore.");
+      } finally {
+        setLoadingProjects(false);
+      }
     };
 
-    setProjects((previous) => [newProject, ...previous]);
+    if (!authLoading) {
+      void load();
+    }
+  }, [authLoading, user]);
+
+  const handleCreateProject = async (payload: { name: string; description: string }) => {
+    if (!user) {
+      setError("You must be logged in to create a project.");
+      return;
+    }
+
+    try {
+      const newProject = await createProject(user, payload);
+      setProjects((previous) => [newProject, ...previous]);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to create project. Please try again.");
+    }
+  };
+
+  const handleCreateClick = () => {
+    if (!user) {
+      setError("You must be logged in to create a project.");
+      return;
+    }
+    setError(null);
+    setIsCreateOpen(true);
   };
 
   return (
@@ -72,7 +84,7 @@ export default function DashboardPage() {
       <DashboardHero
         totalProjects={projects.length}
         activeProjects={activeProjects}
-        onCreateClick={() => setIsCreateOpen(true)}
+        onCreateClick={handleCreateClick}
       />
 
       <section className={styles.panel}>
@@ -80,25 +92,29 @@ export default function DashboardPage() {
           <div>
             <p className={styles.kicker}>Projects</p>
             <h2 className={styles.sectionTitle}>Projects you are part of</h2>
-            <p className={styles.sectionText}>Mocked list to validate the dashboard layout.</p>
+            <p className={styles.sectionText}>Synced with Firestore (per membership).</p>
           </div>
           <div className={styles.panelActions}>
             <span className={styles.badge}>{projects.length} total</span>
-            <button
-              type="button"
-              className={styles.ghostAction}
-              onClick={() => setIsCreateOpen(true)}
-            >
+            <button type="button" className={styles.ghostAction} onClick={handleCreateClick}>
               Create project
             </button>
           </div>
         </header>
 
-        <ProjectList
-          projects={projects}
-          formatDate={formatDate}
-          onCreateClick={() => setIsCreateOpen(true)}
-        />
+        {error && <div className={styles.alert}>{error}</div>}
+
+        {authLoading || loadingProjects ? (
+          <div className={styles.emptyState}>
+            <p>Loading projects…</p>
+          </div>
+        ) : !user ? (
+          <div className={styles.emptyState}>
+            <p>You need to be logged in to view your projects.</p>
+          </div>
+        ) : (
+          <ProjectList projects={projects} formatDate={formatDate} onCreateClick={handleCreateClick} />
+        )}
       </section>
 
       <CreateProjectModal
