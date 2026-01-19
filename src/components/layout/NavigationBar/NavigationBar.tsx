@@ -8,12 +8,18 @@ import styles from "./NavigationBar.module.css";
 
 const navLinks = [
   { to: "/", label: "Home", end: true },
+  { to: "/dashboard", label: "Dashboard", end: false, requiresAuth: true },
 ];
 
 function NavigationBar() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
+
+  const visibleLinks = useMemo(
+    () => navLinks.filter((link) => !link.requiresAuth || !!user),
+    [user],
+  );
 
   const userLabel = useMemo(() => {
     if (!user) return null;
@@ -40,7 +46,7 @@ function NavigationBar() {
         </Link>
 
         <nav className={styles.links} aria-label="Navegação principal">
-          {navLinks.map(({ to, label, end }) => (
+          {visibleLinks.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
